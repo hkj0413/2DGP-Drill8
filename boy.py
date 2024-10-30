@@ -2,7 +2,6 @@ from pico2d import load_image, get_time
 
 from state_machine import StateMachine, space_down, time_out, right_down, right_up, left_down, left_up, auto_run
 
-
 class Idle:
     @staticmethod
     def enter(boy, e):
@@ -77,11 +76,9 @@ class Run:
 class AutoRun:
     @staticmethod
     def enter(boy, e):
-        if boy.action == 3:
-            boy.dir = 1
+        if boy.action == 3 or boy.action == 1:
             boy.action = 1
-        elif boy.action == 2:
-            boy.dir = -1
+        elif boy.action == 2 or boy.action == 0:
             boy.action = 0
 
         boy.frame = 0
@@ -95,10 +92,23 @@ class AutoRun:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
+        if boy.action == 1:
+            boy.x += boy.dir * 5 + boy.s // 8
+            if boy.x + boy.s // 4 > 800:
+                boy.x -= boy.dir * 5 + boy.s // 8
+                boy.action = 0
+        elif boy.action == 0:
+            boy.x += boy.dir * -5 - boy.s // 8
+            if boy.x < 50:
+                boy.x += boy.dir * 5 + boy.s // 8
+                boy.action = 1
         boy.s += 1
         if get_time() - boy.start_time > 5:
             boy.state_machine.add_event(('TIME_OUT', 0))
+            if boy.action == 1:
+                boy.action = 3
+            elif boy.action == 0:
+                boy.action = 2
 
     @staticmethod
     def draw(boy):

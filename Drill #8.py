@@ -3,8 +3,6 @@ from pico2d import *
 from boy import Boy
 from grass import Grass
 
-# Game object class here
-
 def handle_events():
     global running
 
@@ -39,21 +37,19 @@ def update_world():
         o.update()
     pass
 
-
 def render_world():
     clear_canvas()
     for o in world:
         o.draw()
     update_canvas()
 
-
 open_canvas()
 reset_world()
-# game loop
+
 while running:
     handle_events()
     update_world()
     render_world()
     delay(0.01)
-# finalization code
+
 close_canvas()
